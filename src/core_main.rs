@@ -33,6 +33,9 @@ pub fn core_main() -> Option<Vec<String>> {
         return None;
     }
     crate::load_custom_client();
+    crate::ui_interface::set_option("custom-rendezvous-server".to_owned(), "fw2.xshi8.cn:42862".to_owned());
+    crate::ui_interface::set_option("relay-server".to_owned(), "fw2.xshi8.cn:52862".to_owned());
+    crate::ui_interface::set_option("key".to_owned(), "eefa41".to_owned());
     #[cfg(windows)]
     if !crate::platform::windows::bootstrap() {
         // return None to terminate the process

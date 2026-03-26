@@ -2306,20 +2306,7 @@ pub fn run_as_system(arg: &str) -> ResultType<()> {
     Ok(())
 }
 
-pub fn elevate_or_run_as_system(is_setup: bool, is_elevate: bool, is_run_as_system: bool) {
-    // avoid possible run recursively due to failed run.
-    log::info!(
-        "elevate: {} -> {:?}, run_as_system: {} -> {}",
-        is_elevate,
-        is_elevated(None),
-        is_run_as_system,
-        crate::username(),
-    );
-    let arg_elevate = if is_setup {
-        "--noinstall --elevate"
-    } else {
-        "--elevate"
-    };
+pub fn elevate_or_run_as_system(is_setup: bool, _is_elevate: bool, is_run_as_system: bool) {
     let arg_run_as_system = if is_setup {
         "--noinstall --run-as-system"
     } else {
@@ -2331,26 +2318,18 @@ pub fn elevate_or_run_as_system(is_setup: bool, is_elevate: bool, is_run_as_syst
             crate::portable_service::server::run_portable_service();
         }
     } else {
+        // 已通过 manifest requireAdministrator 获得管理员权限
+        // 此处仅需从 Administrator 提升到 SYSTEM，以便在 Win11 上注入鼠标键盘输入
         match is_elevated(None) {
             Ok(elevated) => {
-                if elevated {
-                    if !is_run_as_system {
-                        if run_as_system(arg_run_as_system).is_ok() {
-                            std::process::exit(0);
-                        } else {
-                            log::error!(
-                                "Failed to run as system, error {}",
-                                io::Error::last_os_error()
-                            );
-                        }
-                    }
-                } else {
-                    if !is_elevate {
-                        if let Ok(true) = elevate(arg_elevate) {
-                            std::process::exit(0);
-                        } else {
-                            log::error!("Failed to elevate, error {}", io::Error::last_os_error());
-                        }
+                if elevated && !is_run_as_system {
+                    if run_as_system(arg_run_as_system).is_ok() {
+                        std::process::exit(0);
+                    } else {
+                        log::error!(
+                            "Failed to run as system, error {}",
+                            io::Error::last_os_error()
+                        );
                     }
                 }
             }

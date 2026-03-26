@@ -379,6 +379,32 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                         ),
                     ],
                   ),
+                  if (showOneTime)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0, right: 8.0),
+                      child: InkWell(
+                        onTap: () {
+                          final textToCopy = "ID: ${model.serverId.text}\nPassword: ${model.serverPasswd.text}";
+                          Clipboard.setData(ClipboardData(text: textToCopy));
+                          showToast("复制成功");
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(6.0),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.share, size: 16, color: Colors.white),
+                              SizedBox(width: 6),
+                              Text("复制并分享", style: TextStyle(color: Colors.white, fontSize: 13)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -460,7 +486,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       return buildInstallCard("", systemError, "", () {});
     }
 
-    if (isWindows && !bind.isDisableInstallation()) {
+    if (false) {
       if (!bind.mainIsInstalled()) {
         return buildInstallCard(
             "", bind.isOutgoingOnly() ? "" : "install_tip", "Install",
